@@ -9,10 +9,16 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 
 ## General
 
+- Always ask questions if the request or design is unclear; it is better to ask than to guess at the intention.
+- Always use web search to determine current best practices.
+- Push back if the design is bad or a request is contradictory; ask for clarification.
+- Never deviate from an accepted plan without first asking which direction to go.
 - Match the conventions already in use in the repository you are working in.
 - Keep each commit and pull request focused on one scope; split unrelated work. For large projects, split the work into features and stack dependant pull requests.
 - Never change commit history without direct user approval, including to fix branch names, commit prefixes, or commit bodies.
 - If a flaw is discovered in a commit that has already been pushed to the remote, the fix should come through a new commit, not by rewriting history.
+- Prefer a generic solution if it does not complicate the code needlessly.
+- Always work in a separate git worktree branched of `origin/main` unless told otherwise.
 
 ## Permissions
 
@@ -20,10 +26,6 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 - Do not use the user's access credentials.
 - Do not access servers without explicit permission.
 - Never close a pull request without explicit permission. If it needs a complete redo, rework the existing pull request instead of closing it and starting over.
-
-## Code style
-
-- Prefer a generic solution if it does not complicate the code needlessly.
 
 ## Testing
 
@@ -42,13 +44,10 @@ The only exception is when the code is particularly hard to reason about: comple
 
 Comments should never contain config literals, e.g. never `retries every 3 seconds`, rather something like `retries with a set interval`.
 
-## Branches
-
-Always work in a separate git worktree branched of `origin/main` unless told otherwise.
-
-## Code reviews
+## Creating a PR
 
 When creating a PR, have a subagent review the code and fix any findings that have merit. Mark the PR ready for review only after the review process.
+Clean up after yourself in the local worktree once the PR is on the remote and ready for review.
 
 ## Commit and PR titles
 
@@ -97,7 +96,3 @@ The PR description should either follow the in-repository template or the follow
 
 <Any prerequisite manual steps to take after merge. This section is optional, omit if there are none>
 ```
-
-## Local worktree
-
-Clean up after yourself in the local worktree once the PR is ready for review.
