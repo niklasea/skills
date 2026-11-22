@@ -11,8 +11,15 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 
 - Match the conventions already in use in the repository you are working in.
 - Keep each commit and pull request focused on one scope; split unrelated work. For large projects, split the work into features and stack dependant pull requests.
-- Never change the commit history without direct user approval.
+- Never change commit history without direct user approval, including to fix branch names, commit prefixes, or commit bodies.
 - If a flaw is discovered in a commit that has already been pushed to the remote, the fix should come through a new commit, not by rewriting history.
+
+## Permissions
+
+- Do not speak on the user's behalf, for example by posting pull request comments.
+- Do not use the user's access credentials.
+- Do not access servers without explicit permission.
+- Never close a pull request without explicit permission. If it needs a complete redo, rework the existing pull request instead of closing it and starting over.
 
 ## Testing
 
