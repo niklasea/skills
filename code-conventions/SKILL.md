@@ -1,6 +1,6 @@
 ---
 name: code-conventions
-description: Applies repository conventions to any coding or coding-adjacent task, including implementation, bug fixes, refactoring, tests, dependency updates, build tooling, CI/CD pipelines, and code review. Use whenever writing or changing code, config, or automation, when reviewing code, and when creating commits or pull requests.
+description: Applies repository conventions to any coding or coding-adjacent task, including implementation, bug fixes, refactoring, tests, dependency updates, build tooling, CI/CD pipelines, and code review. Always use when writing or changing code, config, or automation, when reviewing code, and when creating commits or pull requests.
 ---
 
 # Code Conventions
@@ -21,6 +21,10 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 - Do not access servers without explicit permission.
 - Never close a pull request without explicit permission. If it needs a complete redo, rework the existing pull request instead of closing it and starting over.
 
+## Code style
+
+- Prefer a generic solution if it does not complicate the code needlessly.
+
 ## Testing
 
 - Prefer parameterised tests over separate tests per case.
@@ -37,6 +41,14 @@ In-code comments should always explain *why* something is done, or done in that 
 The only exception is when the code is particularly hard to reason about: complex regex, bit manipulation.
 
 Comments should never contain config literals, e.g. never `retries every 3 seconds`, rather something like `retries with a set interval`.
+
+## Branches
+
+Always work in a separate git worktree branched of `origin/main` unless told otherwise.
+
+## Code reviews
+
+When creating a PR, have a subagent review the code and fix any findings that have merit. Mark the PR ready for review only after the review process.
 
 ## Commit and PR titles
 
@@ -79,9 +91,13 @@ The PR description should either follow the in-repository template or the follow
 
 # Pre-merge
 
-<Any prerequisites before merge. This section is optional, omit if there are none>
+<Any prerequisite manual steps before merge. This section is optional, omit if there are none>
 
 # Post-merge
 
-<Any steps to take after merge. This section is optional, omit if there are none>
+<Any prerequisite manual steps to take after merge. This section is optional, omit if there are none>
 ```
+
+## Local worktree
+
+Clean up after yourself in the local worktree once the PR is ready for review.
