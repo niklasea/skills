@@ -19,7 +19,7 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 - Do not speak on the user's behalf, for example by posting pull request comments.
 - Do not use the user's access credentials.
 - Do not access servers without explicit permission.
-- Do not close a pull request without explicit permission. If a pull request needs a complete do-over, reuse the existing open pull request.
+- Never close a pull request without explicit permission. If it needs a complete redo, rework the existing pull request instead of closing it and starting over.
 
 ## Testing
 
