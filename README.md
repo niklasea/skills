@@ -26,11 +26,13 @@ If a skill already exists at the target, the script stops. Pass `--force` to rep
 `global/AGENTS.md` contains agent-behaviour rules that apply to every task, not only coding work. From the repository root, install it as your global OpenCode instructions so it loads in every session:
 
 ```bash
-mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
-ln -s "$PWD/global/AGENTS.md" "${XDG_CONFIG_HOME:-$HOME/.config}/opencode/AGENTS.md"
+target="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/AGENTS.md"
+mkdir -p "$(dirname "$target")"
+if [ -L "$target" ]; then rm -- "$target"; fi
+ln -s "$PWD/global/AGENTS.md" "$target"
 ```
 
-If you already have a global `AGENTS.md`, merge the rules into it instead. Re-run the command if you move this checkout, since the link points at its current location. The `code-conventions` skill assumes these rules are installed; it only covers coding conventions.
+If you already have a global `AGENTS.md` file, merge the rules into it instead; the command replaces only an existing symlink. Re-run it if you move this checkout, since the link points at its current location. The `code-conventions` skill assumes these rules are installed; it only covers coding-related guidance.
 
 ## Skills
 
