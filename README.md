@@ -21,6 +21,16 @@ If a skill already exists at the target, the script stops. Pass `--force` to rep
 ./install.sh --force
 ```
 
+## Global instructions
+
+`global/AGENTS.md` contains agent-behaviour rules that apply to every task, not only coding work. Install it as your global OpenCode instructions so it loads on every session:
+
+```bash
+ln -s "$PWD/global/AGENTS.md" ~/.config/opencode/AGENTS.md
+```
+
+If you already have a global `AGENTS.md`, merge the rules into it instead. The `code-conventions` skill assumes these rules are installed; it only covers coding conventions.
+
 ## Skills
 
-- `code-conventions` — general conventions for any coding or coding-adjacent task, covering tests, comments, commit bodies, PR descriptions, and scope-prefixed commit and PR titles.
+- `code-conventions` — conventions for any coding or coding-adjacent task, covering tests, comments, commit bodies, PR descriptions, and scope-prefixed commit and PR titles.
