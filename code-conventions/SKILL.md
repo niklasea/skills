@@ -9,10 +9,6 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 
 ## General
 
-- Always ask questions if the request or design is unclear; it is better to ask than to guess at the intention.
-- Always use web search to determine current best practices.
-- Push back if the design is bad or a request is contradictory; ask for clarification.
-- Never deviate from an accepted plan without first asking which direction to go.
 - Match the conventions already in use in the repository you are working in.
 - Keep each commit and pull request focused on one scope; split unrelated work. For large projects, split the work into features and stack dependant pull requests.
 - Never change commit history without direct user approval, including to fix branch names, commit prefixes, or commit bodies.
@@ -23,8 +19,6 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 ## Permissions
 
 - Do not speak on the user's behalf, for example by posting pull request comments.
-- Do not use the user's access credentials.
-- Do not access servers without explicit permission.
 - Never close a pull request without explicit permission. If it needs a complete redo, rework the existing pull request instead of closing it and starting over.
 
 ## Testing
