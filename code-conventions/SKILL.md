@@ -7,8 +7,6 @@ description: Apply code conventions to any coding or coding-adjacent task, inclu
 
 These conventions apply to every coding or coding-adjacent task, including CI/CD, build scripts, and dependency updates.
 
-General agent-behaviour rules for every task live in the global OpenCode instructions; install `global/AGENTS.md` from https://github.com/niklasea/skills.
-
 ## General
 
 - Match the conventions already in use in the repository you are working in.
