@@ -1,6 +1,6 @@
 ---
 name: code-conventions
-description: Apply code conventions whenever writing, editing, reviewing, or refactoring code or config: implementation, bug fixes, tests, linting/formatting, dependency updates, build tooling, CI/CD, and code or diff review.
+description: Apply code conventions whenever writing, editing, reviewing, or refactoring code or config, including implementation, bug fixes, tests, linting/formatting, dependency updates, build tooling, CI/CD, file and diff review, commits, and pull requests.
 ---
 
 # Code Conventions
