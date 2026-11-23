@@ -1,6 +1,6 @@
 ---
 name: code-conventions
-description: Applies repository conventions to any coding or coding-adjacent task, including implementation, bug fixes, refactoring, tests, dependency updates, build tooling, CI/CD pipelines, and code review. Always use when writing or changing code, config, or automation, when reviewing code, and when creating commits or pull requests.
+description: Apply code conventions to any coding or coding-adjacent task, including implementation, bug fixes, refactoring, tests, linting/formatting, dependency updates, build tooling, CI/CD, file and diff review, commits, and pull requests. Always use when writing or changing code, config, or automation, and when reviewing code.
 ---
 
 # Code Conventions
