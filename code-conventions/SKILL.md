@@ -16,6 +16,11 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 - Prefer a generic solution if it does not complicate the code needlessly.
 - Always work in a separate git worktree branched of `origin/main` unless told otherwise.
 
+## Permissions
+
+- Do not speak on the user's behalf, for example by posting pull request comments.
+- Never close a pull request without explicit permission. If it needs a complete redo, rework the existing pull request instead of closing it and starting over.
+
 ## Testing
 
 - Prefer parameterised tests over separate tests per case.
