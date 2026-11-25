@@ -21,7 +21,8 @@ Options:
   -h, --help     Show this help.
 
 With no --path, the script detects the harness skills folder, uses it as the
-default, and prompts for the install path.
+default, and prompts for the install path. Skills that include an agents/
+directory also install those agents into the sibling agents/ folder.
 EOF
 }
 
@@ -81,6 +82,26 @@ install_skill() {
   printf '  %s -> %s\n' "$name" "$target"
 }
 
+install_agent() {
+  local src="$1" name="$2"
+  local target="$AGENTS_DEST/$name"
+
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    if [ "$FORCE" != true ]; then
+      die "$target already exists; remove it or pass --force"
+    fi
+    rm -rf -- "$target"
+  fi
+
+  if [ "$MODE" = copy ]; then
+    cp -- "$src" "$target"
+  else
+    ln -s -- "$src" "$target"
+  fi
+
+  printf '  agents/%s -> %s\n' "$name" "$target"
+}
+
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --path)
@@ -113,6 +134,7 @@ else
 fi
 
 [ -n "$DEST" ] || die "install path is empty"
+AGENTS_DEST="$(dirname "$DEST")/agents"
 mkdir -p -- "$DEST"
 
 printf 'Installing skills from %s into %s\n' "$REPO_DIR" "$DEST"
@@ -127,4 +149,16 @@ done
 
 [ "$found" = 1 ] || die "no skills found in $REPO_DIR"
 
-printf '\nDone. Restart or reload opencode, then mention @code-conventions to force-load a skill.\n'
+found_agents=0
+for agent_md in "$REPO_DIR"/*/agents/*.md; do
+  [ -e "$agent_md" ] || continue
+  mkdir -p -- "$AGENTS_DEST"
+  install_agent "$agent_md" "$(basename "$agent_md")"
+  found_agents=1
+done
+
+if [ "$found_agents" = 0 ]; then
+  printf '  no agents to install\n'
+fi
+
+printf '\nDone. Restart or reload opencode, then mention a skill ID to force-load it.\n'
