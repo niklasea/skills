@@ -21,8 +21,9 @@ Options:
   -h, --help     Show this help.
 
 With no --path, the script detects the harness skills folder, uses it as the
-default, and prompts for the install path. Skills that include an agents/
-directory also install those agents into the sibling agents/ folder.
+default, and prompts for the install path. Agent definitions in the top-level
+agents/ directory are installed into the agents/ directory next to the skills
+directory.
 EOF
 }
 

@@ -13,6 +13,11 @@ repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || {
 }
 cd "$repo_root"
 
+command -v python3 >/dev/null 2>&1 || {
+  echo "python3 is required" >&2
+  exit 1
+}
+
 range="${1:-}"
 if [ -z "$range" ]; then
   if git rev-parse --verify -q origin/main >/dev/null 2>&1; then

@@ -74,7 +74,7 @@ The orchestrator gives you:
 2. For each finding, read the cited location and enough surrounding code to make a correct change.
 3. Apply the smallest fix that resolves the finding. Do not reformat, rename, or refactor unrelated code.
 4. If a fix is not safely possible, do not guess. Mark it `blocked` with the missing decision.
-5. Run the review gate script path provided by the orchestrator (typically `$SKILL_DIR/scripts/review-gate.sh`) from the repository root.
+5. Run the absolute review gate script path provided by the orchestrator from the repository root.
 6. Report per-ID status: `fixed`, `blocked`, or `not-reproduced`.
 
 ## Rules

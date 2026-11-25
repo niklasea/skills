@@ -3,7 +3,7 @@
 # Deterministic review gate. Runs available linters and validators, records
 # pass/fail/skip per tool, and never applies infrastructure changes.
 #
-# Usage: review-gate.sh
+# Usage: review-gate.sh [git-diff-range]
 # Env:
 #   REVIEW_OUT_DIR   output directory (defaults to /tmp/opencode/review-<sha>)
 #   REVIEW_GATE_FULL set to 1 to also run dotnet build/test and cargo checks
@@ -21,6 +21,15 @@ out="${REVIEW_OUT_DIR:-/tmp/opencode/review-$short}"
 mkdir -p "$out"
 log="$out/gate.log"
 : >"$log"
+
+range="${1:-}"
+if [ -z "$range" ]; then
+  if git rev-parse --verify -q origin/main >/dev/null 2>&1; then
+    range="$(git merge-base origin/main HEAD)"
+  else
+    range="HEAD"
+  fi
+fi
 
 pass=0
 fail=0
@@ -73,8 +82,8 @@ run() {
 record header "gate" "repository: $repo_root"
 record header "gate" "output: $out"
 
-# Whitespace and conflict markers.
-if git diff --check >>"$log" 2>&1; then
+# Whitespace and conflict markers across the review range.
+if git diff --check "$range" >>"$log" 2>&1; then
   record pass "git-diff-check" "no whitespace errors"
 else
   record fail "git-diff-check" "whitespace errors or conflict markers"

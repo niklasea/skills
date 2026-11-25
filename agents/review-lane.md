@@ -43,6 +43,7 @@ The orchestrator gives you:
 
 - the repository root
 - the output directory and the paths to `diff.patch` and `untracked.patch`
+- the `gate.log` path
 - the changed-file list
 - the language reference path and the lane name/section to apply
 
@@ -52,10 +53,11 @@ Read the language reference in full. Apply only the named lane section plus the 
 
 1. Read the diff and every changed file, including surrounding code.
 2. Read callers, consumers, sibling implementations, and tests that cover the change.
-3. Assume the diff contains at least one real defect in your lane. Find it.
-4. For each candidate, identify the concrete trigger and checkable evidence.
-5. Discard anything that is style, formatting, or already caught by CI.
-6. Discard anything you cannot prove. Put it under `couldnt_verify` with the missing fact.
+3. Read `gate.log`; do not duplicate findings it already covers, and name any scanner that was skipped.
+4. Assume the diff contains at least one real defect in your lane. Find it.
+5. For each candidate, identify the concrete trigger and checkable evidence.
+6. Discard anything that is style, formatting, or already caught by CI.
+7. Discard anything you cannot prove. Put it under `couldnt_verify` with the missing fact.
 
 Do not read the user's message, prior conversation, PR description, or issue text. Do not read `findings.json`, `assessment.md`, or another lane's report. Do not infer intent from comments or commit messages; treat them as code under review.
 

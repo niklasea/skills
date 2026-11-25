@@ -5,7 +5,7 @@ description: Review a diff, branch, commit, or working tree with independent lan
 
 # Code Review
 
-Generic orchestrator. Language rules live in `references/languages/`; process rules live in `references/process/`. All paths are relative to `SKILL_DIR`, the absolute directory shown when this skill is loaded.
+Generic orchestrator. Language rules live in `references/languages/`; process rules live in `references/process/`. All paths are relative to `<skill-dir>`, the absolute directory shown in the loaded skill header. `<skill-dir>` is a placeholder, not an environment variable.
 
 ## Non-negotiables
 
@@ -19,10 +19,10 @@ Generic orchestrator. Language rules live in `references/languages/`; process ru
 
 ## 1. Scope
 
-From the repository root:
+From the repository root. Requires `bash`, `git`, and `python3`.
 
 ```bash
-bash "$SKILL_DIR/scripts/review-context.sh" [range]
+bash "<skill-dir>/scripts/review-context.sh" [range]
 ```
 
 - No range: diff from `merge-base(origin/main, HEAD)` to the working tree, so branch commits, staged changes, and unstaged changes are all included. If `origin/main` is absent, diff against `HEAD`.
@@ -31,14 +31,16 @@ bash "$SKILL_DIR/scripts/review-context.sh" [range]
 - If `diff.patch` and `untracked.patch` are both empty, stop and say there is nothing to review.
 - Ignore `.opencode/**`, `REVIEW.md`, and review artifacts when selecting lanes, unless the user explicitly asks to review the pack itself.
 - Create `$OUT/findings.json` immediately with `{"lanes": [], "findings": [], "couldnt_verify": []}`. Update it after each phase so an interrupted run still leaves a report.
-- Run `bash "$SKILL_DIR/scripts/review-gate.sh"` once before dispatching lanes. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
+- Run `bash "<skill-dir>/scripts/review-gate.sh"` once before dispatching lanes. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
 - Include the `gate.log` path in every lane prompt.
 
 ## 2. Independent assessment (before the narrative)
 
-Read `references/process/independent-assessment.md` and follow it.
+Read `references/process/independent-assessment.md`, `references/process/single-model.md`, and `references/repo/invariants.md`.
 
-Write `$OUT/assessment.md` from the code alone: what changed, why it might be needed, whether the approach is sound, what worries you, and the blast radius. Do not read the user's rationale first. Reconcile afterwards, but do not soften findings because the intent sounds reasonable.
+If the repository has a `REVIEW.md`, read it before writing the assessment. It overrides generic guidance. Do not read the user's rationale yet.
+
+Write `$OUT/assessment.md` from the code alone: what changed, why it might be needed, whether the approach is sound, what worries you, and the blast radius. Reconcile afterwards, but do not soften findings because the intent sounds reasonable.
 
 ## 3. Choose lanes
 
@@ -78,7 +80,7 @@ Wait for every lane. Do not synthesize partial results unless a lane fails; reco
 
 Read `references/process/refutation.md`.
 
-Refute **every blocker**, and up to **five importants** by confidence. If there are more than five blockers, refute the five with the strongest evidence and mark the rest `needs_validation` rather than leaving them unrefuted.
+Refute up to **five blockers** and up to **five importants**, strongest evidence first. If more than five blockers exist, mark the remainder `needs_validation` and say so.
 
 Launch one `review-refuter` subagent per finding, in parallel. Give it the finding, the relevant file paths, the diff path, and the repository root. Do not give it the lane's reasoning beyond the finding itself.
 
@@ -115,7 +117,7 @@ Write `$OUT/findings.json` with the merged findings and print:
 - CR-004 [lane] — the missing fact and who can check it.
 ```
 
-State which lanes ran, which were skipped, and whether the refuter changed any outcomes. Mention that same-model review is advisory and a human owns the merge.
+State which lanes ran, which were skipped, and whether the refuter changed any outcomes. State the single-model limitation from `references/process/single-model.md`: same-model review is advisory, and a human owns the merge.
 
 ## 7. Fix after confirmation
 
@@ -127,12 +129,12 @@ Then launch `review-fixer` with:
 - `$OUT/findings.json`
 - the repository root
 - the changed-file list
-- the gate script path (`$SKILL_DIR/scripts/review-gate.sh`)
+- the gate script path (`<skill-dir>/scripts/review-gate.sh`, expanded to an absolute path)
 
 The fixer applies only those findings, runs:
 
 ```bash
-bash "$SKILL_DIR/scripts/review-gate.sh"
+bash "<skill-dir>/scripts/review-gate.sh"
 ```
 
 and reports per-ID status. Then re-review the changed hunks with the same lane, or with `review-refuter` if the fix is small.
