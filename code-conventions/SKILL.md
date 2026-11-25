@@ -18,8 +18,8 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 
 ## Migrations
 
-- Do not add application code that exists only to run a one-time migration and will be dead once the migration is complete. Put the manual steps in the pull request's Pre-merge or Post-merge section, as the timing requires, or the equivalent section of the repository's template. Tool-managed migration files that the repository keeps and applies automatically are exempt.
-- If such code is unavoidable, open a follow-up pull request that removes it once the migration is complete. It does not need to be the sole purpose of that pull request. Base its branch on this pull request's branch if this one is still open; otherwise base it on the default branch.
+- Do not add application code that exists only to run a one-time migration and will be dead once the migration is complete. Put the manual steps in the pull request's pre-/post-merge section, as the timing requires, or the equivalent section of the repository's template. Tool-managed migration files that the repository keeps and applies automatically are exempt.
+- If such code is unavoidable, open a follow-up pull request that removes it once the migration is complete. Base its branch on this pull request's branch if this one is still open; otherwise base it on the default branch.
 
 ## Permissions
 
