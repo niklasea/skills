@@ -34,11 +34,10 @@ Docstrings should focus on *what* the class/function is for, its inputs, and its
 Public interfaces always get docstrings.
 
 In-code comments should always explain *why* something is done, or done in that particular way.
+They should name the concrete failure mode they prevent and the invariant or requirement they protect, not the mechanism, which the code already shows. E.g. `deploys break after an ownership change; config nodes must stay writable by the config daemon`, not `writes require the config daemon's group`.
+Keep comments concise: one short sentence is usually enough.
+
 The only exception is when the code is particularly hard to reason about: complex regex, bit manipulation.
-
-Keep comments concise. One short sentence is usually enough; expand only when the code is genuinely hard to follow.
-
-A comment must state both the concrete failure mode it prevents and the invariant or requirement it protects. Do not describe the mechanism; the code shows that. E.g. `root:root nodes break later deploys; config nodes must be group vyattacfg`, not `writes require the vyattacfg group`.
 
 Comments should never contain config literals, e.g. never `retries every 3 seconds`, rather something like `retries with a set interval`.
 
