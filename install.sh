@@ -62,6 +62,15 @@ expand_tilde() {
   esac
 }
 
+remove_target() {
+  local target="$1"
+  if [ -L "$target" ] || [ ! -d "$target" ]; then
+    rm -f -- "$target"
+  else
+    rm -r -- "$target"
+  fi
+}
+
 install_skill() {
   local src="$1" name="$2"
   local target="$DEST/$name"
@@ -70,17 +79,11 @@ install_skill() {
     if [ "$FORCE" != true ]; then
       die "$target already exists; remove it or pass --force"
     fi
-    rm -rf -- "$target"
+    remove_target "$target"
   fi
 
   if [ "$MODE" = copy ]; then
-    mkdir -p -- "$target"
-    (
-      cd "$src" || exit 1
-      # Agents are installed into the sibling agents/ directory, so omit the
-      # nested copy instead of copying it and deleting it afterwards.
-      find . -mindepth 1 -maxdepth 1 ! -name agents -exec cp -R {} "$target/" \;
-    )
+    cp -R -- "$src" "$target"
   else
     ln -s -- "$src" "$target"
   fi
@@ -96,7 +99,7 @@ install_agent() {
     if [ "$FORCE" != true ]; then
       die "$target already exists; remove it or pass --force"
     fi
-    rm -rf -- "$target"
+    remove_target "$target"
   fi
 
   if [ "$MODE" = copy ]; then
@@ -156,7 +159,7 @@ done
 [ "$found" = 1 ] || die "no skills found in $REPO_DIR"
 
 found_agents=0
-for agent_md in "$REPO_DIR"/*/agents/*.md; do
+for agent_md in "$REPO_DIR"/agents/*.md; do
   [ -e "$agent_md" ] || continue
   mkdir -p -- "$AGENTS_DEST"
   install_agent "$agent_md" "$(basename "$agent_md")"
