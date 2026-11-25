@@ -36,6 +36,8 @@ Public interfaces always get docstrings.
 In-code comments should always explain *why* something is done, or done in that particular way.
 The only exception is when the code is particularly hard to reason about: complex regex, bit manipulation.
 
+A comment must state both the concrete failure mode it prevents and the invariant or requirement it protects. Do not describe the mechanism; the code shows that. Keep it to one line, e.g. `root:root nodes break later deploys; config nodes must be group vyattacfg`, not `writes require the vyattacfg group`.
+
 Comments should never contain config literals, e.g. never `retries every 3 seconds`, rather something like `retries with a set interval`.
 
 ## Creating a PR
