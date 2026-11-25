@@ -16,6 +16,11 @@ These conventions apply to every coding or coding-adjacent task, including CI/CD
 - Prefer a generic solution if it does not complicate the code needlessly.
 - Always work in a separate git worktree branched of `origin/main` unless told otherwise.
 
+## Migrations
+
+- Do not include code that exists only for a one-time migration and will be dead after the pull request merges. Put the manual step in the pull request's Post-merge section instead.
+- If migration code is unavoidable, open a stacked pull request on top that removes that code once the migration is complete.
+
 ## Permissions
 
 - Do not speak on the user's behalf, for example by posting pull request comments.
