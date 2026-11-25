@@ -37,4 +37,4 @@ If you already have a global `AGENTS.md` file, merge the rules into it instead; 
 ## Skills
 
 - `code-conventions` — conventions for any coding or coding-adjacent task, covering tests, comments, commit bodies, PR descriptions, and scope-prefixed commit and PR titles.
-- `code-review` — independent review lanes with adversarial refutation and confirmation-gated fixes. Ships `review-lane`, `review-refuter`, and `review-fixer` subagents plus deterministic context and gate scripts.
+- `code-review` — reviews changes with independent language lanes, adversarial refutation, and confirmation-gated fixes.
