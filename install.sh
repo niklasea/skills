@@ -75,6 +75,9 @@ install_skill() {
 
   if [ "$MODE" = copy ]; then
     cp -R -- "$src" "$target"
+    # OpenCode discovers agents only from the sibling agents/ directory, so a
+    # nested copy would be unused and could drift from the installed agents.
+    rm -rf -- "$target/agents"
   else
     ln -s -- "$src" "$target"
   fi

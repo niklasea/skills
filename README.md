@@ -8,7 +8,7 @@ Collection of agent skills. Each top-level directory containing a `SKILL.md` is 
 ./install.sh
 ```
 
-The script detects the OpenCode skills folder, uses it as the default, and asks where to install. Skills are copied by default; pass `--link` to symlink them to this checkout instead, so edits are live without reinstalling. If a skill includes an `agents/` directory, its subagents are installed into the sibling `agents/` folder.
+The script detects the OpenCode skills folder, uses it as the default, and asks where to install. Skills are copied by default; pass `--link` to symlink them to this checkout instead, so edits are live without reinstalling. If a skill includes an `agents/` directory, its agent files are installed into the `agents/` directory next to the skills directory; they are not duplicated inside the installed skill.
 
 ```bash
 ./install.sh --link
