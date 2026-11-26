@@ -247,7 +247,10 @@ def iter_repo_files():
     for root, dirs, files in os.walk("."):
         dirs[:] = [name for name in dirs if name != ".git"]
         for name in files:
-            yield os.path.join(root, name)
+            path = os.path.join(root, name)
+            if os.path.islink(path):
+                continue
+            yield path
 
 
 def run_gate(repo, spec):
