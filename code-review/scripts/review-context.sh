@@ -120,7 +120,7 @@ if [ "$worktree_included" = 1 ]; then
   if [ "${REVIEW_INCLUDE_PACK:-0}" = "1" ]; then
     cp -- "$raw_untracked" "$out/untracked.txt"
   else
-    grep -v -E '^(\.opencode/|REVIEW\.md$|node_modules/|target/|bin/|obj/|\.terraform/|__pycache__/)' \
+    grep -v -E '^(\.opencode/|node_modules/|target/|bin/|obj/|\.terraform/|__pycache__/)' \
       "$raw_untracked" >"$out/untracked.txt" || true
   fi
   rm -f -- "$raw_untracked"

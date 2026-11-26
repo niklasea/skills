@@ -64,7 +64,7 @@ Cite the resource block and attribute. Do not speculate about provider behavior 
 
 ## False-positive traps
 
-- `insecure = true` on the Proxmox provider may be intentional for a self-signed endpoint. Confirm in `REVIEW.md` before flagging.
+- `insecure = true` on the Proxmox provider may be intentional for a self-signed endpoint. Confirm the endpoint is intentional before flagging.
 - A `count` or `for_each` change can be intentional; require plan evidence before calling it a blocker.
 - Provider version constraints are often deliberate.
 - `terraform fmt` currently has `continue-on-error` in CI; formatting is not a review finding.

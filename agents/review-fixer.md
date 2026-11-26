@@ -58,7 +58,7 @@ The orchestrator gives you:
 
 - Do not apply findings that were not approved.
 - You have no shell access. Use only `edit`; do not call `execute`, `opencode_*`, or session-management tools.
-- Do not edit linter configuration, CI policy, or `REVIEW.md`.
+- Do not edit linter configuration or CI policy.
 - Do not read or print secret values.
 - Keep the diff minimal. The orchestrator re-diffs the working tree against the pre-fix HEAD and re-reviews the changed hunks.
 

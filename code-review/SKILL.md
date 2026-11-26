@@ -30,16 +30,14 @@ bash "<skill-dir>/scripts/review-context.sh" [range]
 - Read `context.json`. Use its `out_dir` as `$OUT`, its `range` for the gate, and its `reviewed_upper` / `head` for the fix rules.
 - If the script exits non-zero, stop and report its error. Do not treat a failed run as an empty diff.
 - If `diff.patch` and `untracked.patch` are both empty, stop and say there is nothing to review.
-- Ignore `.opencode/**`, `REVIEW.md`, and review artifacts when selecting lanes, unless the user explicitly asks to review the pack itself.
+- Ignore `.opencode/**` and review artifacts when selecting lanes, unless the user explicitly asks to review the pack itself.
 - Create `$OUT/findings.json` immediately with `{"lanes": [], "findings": [], "couldnt_verify": []}`. Update it after each phase so an interrupted run still leaves a report.
 - Run `bash "<skill-dir>/scripts/review-gate.sh" "<range>"` once before dispatching lanes, passing `context.json.range`. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
 - Include the `gate.log` path in every lane prompt.
 
 ## 2. Independent assessment (before the narrative)
 
-Read `references/process/independent-assessment.md`.
-
-If the repository has a `REVIEW.md`, read it before writing the assessment. It overrides generic guidance. Do not read the user's rationale yet.
+Read `references/process/independent-assessment.md`. Do not read the user's rationale yet.
 
 Write `$OUT/assessment.md` from the code alone: what changed, why it might be needed, whether the approach is sound, what worries you, and the blast radius. Reconcile afterwards, but do not soften findings because the intent sounds reasonable.
 
