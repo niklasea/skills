@@ -1,4 +1,4 @@
-# Severity and verdict
+# Severity
 
 ## Severity
 
@@ -18,26 +18,10 @@ Style, formatting, import order, and lint violations are **not** review findings
 - `medium`: strong static evidence, but one assumption remains.
 - `low`: plausible, not proven. Low confidence cannot be a blocker.
 
-## Verdict
-
-| Verdict | When |
-| --- | --- |
-| `LGTM` | No blockers, no importants, and every remaining item is a nit or verified-clean. High confidence. |
-| `Needs Changes` | At least one confirmed blocker. |
-| `Needs Human Review` | An important finding remains, confidence is medium/low, the change depends on a plan or runtime state you cannot see, or the approach itself is questionable. |
-
-Rules:
-
-1. The verdict must reflect the most severe unresolved finding.
-2. Never combine `LGTM` with an important finding.
-3. When unsure, escalate to `Needs Human Review`. A false LGTM is worse than an unnecessary escalation.
-4. Separate code correctness from approach completeness. Correct code implementing the wrong approach is not LGTM.
-5. An AI review is advisory. A human owns the merge.
-
 ## Report shape
 
 - **Blocking:** confirmed blockers only.
-- **Important:** confirmed importants, including downgraded-from-blocker with a reason.
+- **Important:** confirmed importants, including any finding whose corrected severity is important, such as a downgraded blocker.
 - **Nits:** optional items, capped to the highest-value few.
 - **Couldn't verify:** missing facts, one line each.
 

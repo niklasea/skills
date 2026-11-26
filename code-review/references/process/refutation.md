@@ -20,7 +20,7 @@ The refuter's job is to disprove the finding, not to agree with it.
 | Verdict | Meaning |
 | --- | --- |
 | `confirmed` | The defect is real. Keep the severity, corrected if the evidence warrants it. |
-| `downgraded` | Real, but the harm is lower than claimed. Keep as a nit or important with a reason. |
+| `downgraded` | Real, but the harm is lower than claimed. Keep it with the corrected `severity`, which must be lower than the lane's, and the reason. |
 | `rejected` | The finding is wrong: the guard exists, the caller cannot pass the input, or the behavior is intended. Give the reason. |
 | `needs_validation` | The claim may be real, but a decisive fact is missing. Name the fact and who can check it. |
 

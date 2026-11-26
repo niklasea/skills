@@ -1,6 +1,6 @@
 ---
 name: Code Review
-description: Review a diff, branch, commit, or working tree with independent language lanes, adversarial refutation, and confirmation-gated fixes. Use when asked to review code, check a change before commit or merge, or audit a repository.
+description: Review a diff, branch, range, or working tree with independent language lanes, adversarial refutation, and confirmation-gated fixes. Use when asked to review code, check a change before commit or merge, or audit a repository.
 ---
 
 # Code Review
@@ -13,9 +13,8 @@ Generic orchestrator. Language rules live in `references/languages/`; process ru
 2. Do not pass the user's rationale, hypothesis, or PR description to lane agents. They review the code, not the intent.
 3. Do not flag what the compiler, analyzers, linters, or CI already catch.
 4. No blocker without checkable evidence. A hunch is a nit or a question.
-5. `LGTM` only when confident. Otherwise `Needs Human Review`.
-6. Lane and refuter agents are read-only. Only `review-fixer` writes. None of them may call `execute`, `opencode_*`, or session-management tools; those permissions are not reliably enforceable, so the instruction is explicit.
-7. If a claim depends on a plan or runtime state you cannot see, put it under **Couldn't verify**.
+5. Lane and refuter agents are read-only. Only `review-fixer` writes. None of them may call `execute`, `opencode_*`, or session-management tools; those permissions are not reliably enforceable, so the instruction is explicit.
+6. If a claim depends on a plan or runtime state you cannot see, put it under **Couldn't verify**.
 
 ## 1. Scope
 
@@ -26,17 +25,19 @@ bash "<skill-dir>/scripts/review-context.sh" [range]
 ```
 
 - No range: diff from `merge-base(origin/main, HEAD)` to the working tree, so branch commits, staged changes, and unstaged changes are all included. If `origin/main` is absent, diff against `HEAD`.
+- A single revision (`main`, `HEAD~3`) is the base diffed against the working tree, so it also includes uncommitted changes. `A..B` is a commit-only range. Review one commit with `A^..A`.
 - The script writes `context.json`, `diff.patch`, `untracked.patch`, `changed-files.txt`, and `recent-commits.txt` under `/tmp/opencode/review-<sha>/`.
-- Read `context.json`. Use its `out_dir` as `$OUT`.
+- Read `context.json`. Use its `out_dir` as `$OUT`, its `range` for the gate, and its `reviewed_upper` / `head` for the fix rules.
+- If the script exits non-zero, stop and report its error. Do not treat a failed run as an empty diff.
 - If `diff.patch` and `untracked.patch` are both empty, stop and say there is nothing to review.
 - Ignore `.opencode/**`, `REVIEW.md`, and review artifacts when selecting lanes, unless the user explicitly asks to review the pack itself.
 - Create `$OUT/findings.json` immediately with `{"lanes": [], "findings": [], "couldnt_verify": []}`. Update it after each phase so an interrupted run still leaves a report.
-- Run `bash "<skill-dir>/scripts/review-gate.sh"` once before dispatching lanes. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
+- Run `bash "<skill-dir>/scripts/review-gate.sh" "<range>"` once before dispatching lanes, passing `context.json.range`. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
 - Include the `gate.log` path in every lane prompt.
 
 ## 2. Independent assessment (before the narrative)
 
-Read `references/process/independent-assessment.md`, `references/process/single-model.md`, and `references/repo/invariants.md`.
+Read `references/process/independent-assessment.md`.
 
 If the repository has a `REVIEW.md`, read it before writing the assessment. It overrides generic guidance. Do not read the user's rationale yet.
 
@@ -55,7 +56,7 @@ Read `references/languages/index.md`.
 
 ## 4. Dispatch lanes
 
-Read `references/process/evidence.md` and `references/process/severity-and-verdict.md`.
+Read `references/process/evidence.md` and `references/process/severity.md`.
 
 Launch one `review-lane` subagent per selected lane, in parallel. Each prompt contains only:
 
@@ -87,7 +88,7 @@ Launch one `review-refuter` subagent per finding, in parallel. Give it the findi
 The refuter returns `confirmed`, `downgraded`, `rejected`, or `needs_validation` with evidence.
 
 - `rejected`: drop the finding.
-- `downgraded`: keep it as a nit.
+- `downgraded`: keep it with the refuter's corrected `severity`, which must be lower than the lane's.
 - `confirmed`: keep the severity, corrected if needed.
 - `needs_validation`: move it to **Couldn't verify** with the missing fact.
 
@@ -95,15 +96,13 @@ If a refuter cannot produce a caller trace, failing test, plan delta, linter res
 
 ## 6. Synthesize
 
-Deduplicate by root cause, not by line. Keep the highest severity and the strongest evidence. Apply `references/process/severity-and-verdict.md`.
+Deduplicate by root cause, not by line. Keep the highest severity and the strongest evidence. Apply `references/process/severity.md`.
 
 Never trust lane-assigned IDs; they collide across lanes. After deduplication, assign global IDs `CR-001`, `CR-002`, ... in severity order: blockers first, then importants, then nits, then **Couldn't verify**. Preserve the original lane name on each finding.
 
 Write `$OUT/findings.json` with the merged findings and print:
 
 ```markdown
-## Verdict: LGTM | Needs Human Review | Needs Changes
-
 ### Blocking
 - CR-001 [lane] path:line — summary. Evidence. Suggested fix.
 
@@ -117,11 +116,15 @@ Write `$OUT/findings.json` with the merged findings and print:
 - CR-004 [lane] — the missing fact and who can check it.
 ```
 
-State which lanes ran, which were skipped, and whether the refuter changed any outcomes. State the single-model limitation from `references/process/single-model.md`: same-model review is advisory, and a human owns the merge.
+State which lanes ran, which were skipped, and whether the refuter changed any outcomes.
 
 ## 7. Fix after confirmation
 
 Do not edit anything until the user explicitly approves a list of finding IDs.
+
+Apply fixes only when `reviewed_upper` is `worktree` or equals `head`. A historical commit, or an `A..B` range whose upper bound is not `head`, is report-only: the fixer would edit a different tree.
+
+Record `pre_fix_head` from `context.json.head` before launching the fixer.
 
 Then launch `review-fixer` with:
 
@@ -129,15 +132,21 @@ Then launch `review-fixer` with:
 - `$OUT/findings.json`
 - the repository root
 - the changed-file list
-- the gate script path (`<skill-dir>/scripts/review-gate.sh`, expanded to an absolute path)
 
-The fixer applies only those findings, runs:
+The fixer edits only; it does not run the gate or any shell command. It reports per-ID status and the paths it changed.
+
+After it returns, from the repository root:
 
 ```bash
-bash "<skill-dir>/scripts/review-gate.sh"
+REVIEW_OUT_DIR="$OUT/fix" bash "<skill-dir>/scripts/review-gate.sh" "<pre_fix_head>"
+REVIEW_OUT_DIR="$OUT/fix" bash "<skill-dir>/scripts/review-context.sh" "<pre_fix_head>"
 ```
 
-and reports per-ID status. Then re-review the changed hunks with the same lane, or with `review-refuter` if the fix is small.
+The second run diffs the working tree against `pre_fix_head`, so the patch contains the fixes. If the worktree was already dirty before the fixes, say so; the fix diff includes that existing state.
+
+Then re-review the changed hunks with the same lane, or with `review-refuter` if the fix is small. Give it `$OUT/fix/diff.patch`, `$OUT/fix/untracked.patch`, `$OUT/fix/changed-files.txt`, `$OUT/fix/gate.log`, and the paths the fixer changed.
+
+If the post-fix gate fails, report it in the fix summary. Do not weaken the gate or loop on it.
 
 ## Lane reference format
 
