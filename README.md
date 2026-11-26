@@ -8,7 +8,7 @@ Collection of agent skills. Each top-level directory containing a `SKILL.md` is 
 ./install.sh
 ```
 
-The script detects the OpenCode skills folder, uses it as the default, and asks where to install. Skills are copied by default; pass `--link` to symlink them to this checkout instead, so edits are live without reinstalling.
+The script detects the OpenCode skills folder, uses it as the default, and asks where to install. Skills are copied by default; pass `--link` to symlink them to this checkout instead, so edits are live without reinstalling. Agent definitions live in the top-level `agents/` directory and are installed into the `agents/` directory next to the skills directory.
 
 ```bash
 ./install.sh --link
@@ -37,3 +37,4 @@ If you already have a global `AGENTS.md` file, merge the rules into it instead; 
 ## Skills
 
 - `code-conventions` — conventions for any coding or coding-adjacent task, covering tests, comments, commit bodies, PR descriptions, and scope-prefixed commit and PR titles.
+- `code-review` — reviews changes with independent language lanes, adversarial refutation, and confirmation-gated fixes.
