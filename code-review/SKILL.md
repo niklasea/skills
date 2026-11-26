@@ -14,7 +14,8 @@ Generic orchestrator. Language rules live in `references/languages/`; process ru
 3. Do not flag what the compiler, analyzers, linters, or CI already catch.
 4. No blocker without checkable evidence. A hunch is a nit or a question.
 5. Lane and refuter agents are read-only. Only `review-fixer` writes. None of them may call `execute`, `opencode_*`, or session-management tools; those permissions are not reliably enforceable, so the instruction is explicit.
-6. If a claim depends on a plan or runtime state you cannot see, put it under **Couldn't verify**.
+6. Lanes and refuters may use `webfetch` and `websearch` to verify external documentation or contracts. They must not send repository contents, diffs, credentials, or secrets to external services.
+7. If a claim depends on a plan or runtime state you cannot see, put it under **Couldn't verify**.
 
 ## 1. Scope
 
@@ -47,8 +48,8 @@ Read `references/languages/index.md`.
 
 - Match changed paths to language references.
 - Read only the **Lane map** and **CI already covers** sections of each matching reference.
-- Select at most **three lanes total**. This is a total cap, not a batch size. Do not run a second batch.
-- If more than three candidates apply, keep the three with the highest blast radius. Merge related lanes (for example Terraform correctness and operability) or defer the rest and say so in the report.
+- Select at most **four lanes total**. This is a total cap, not a batch size. Do not run a second batch.
+- If more than four candidates apply, keep the four with the highest blast radius. Merge related lanes (for example Terraform correctness and operability) or defer the rest and say so in the report.
 - Priority order: security, soundness, correctness, tests, API, performance, operability, hardening.
 - Docs-only or generated-only changes: run only the `generic` lane, or stop.
 
