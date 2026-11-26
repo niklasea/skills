@@ -19,10 +19,10 @@ Generic orchestrator. Language rules live in `references/languages/`; process ru
 
 ## 1. Scope
 
-From the repository root. Requires `bash`, `git`, and `python3`.
+From the repository root. Requires `python3` and `git`.
 
 ```bash
-bash "<skill-dir>/scripts/review-context.sh" [range]
+python3 "<skill-dir>/scripts/review.py" context [range]
 ```
 
 - No range: diff from `merge-base(origin/main, HEAD)` to the working tree, so branch commits, staged changes, and unstaged changes are all included. If `origin/main` is absent, diff against `HEAD`.
@@ -33,7 +33,7 @@ bash "<skill-dir>/scripts/review-context.sh" [range]
 - If `diff.patch` and `untracked.patch` are both empty, stop and say there is nothing to review.
 - Ignore `.opencode/**` and review artifacts when selecting lanes, unless the user explicitly asks to review the pack itself.
 - Create `$OUT/findings.json` immediately with `{"lanes": [], "findings": [], "couldnt_verify": []}`. Update it after each phase so an interrupted run still leaves a report.
-- Run `bash "<skill-dir>/scripts/review-gate.sh" "<range>"` once before dispatching lanes, passing `context.json.range`. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
+- Run `python3 "<skill-dir>/scripts/review.py" gate "<range>"` once before dispatching lanes, passing `context.json.range`. Read `gate.log`; a failing gate is not itself a review finding, but it tells lanes what CI already covers and which scanners were skipped.
 - Include the `gate.log` path in every lane prompt.
 
 ## 2. Independent assessment (before the narrative)
@@ -137,8 +137,8 @@ The fixer edits only; it does not run the gate or any shell command. It reports 
 After it returns, from the repository root:
 
 ```bash
-REVIEW_OUT_DIR="$OUT/fix" bash "<skill-dir>/scripts/review-gate.sh" "<pre_fix_head>"
-REVIEW_OUT_DIR="$OUT/fix" bash "<skill-dir>/scripts/review-context.sh" "<pre_fix_head>"
+REVIEW_OUT_DIR="$OUT/fix" python3 "<skill-dir>/scripts/review.py" gate "<pre_fix_head>"
+REVIEW_OUT_DIR="$OUT/fix" python3 "<skill-dir>/scripts/review.py" context "<pre_fix_head>"
 ```
 
 The second run diffs the working tree against `pre_fix_head`, so the patch contains the fixes. If the worktree was already dirty before the fixes, say so; the fix diff includes that existing state.
