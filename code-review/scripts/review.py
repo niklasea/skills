@@ -181,31 +181,25 @@ def run_context(repo, spec):
     )
 
     if worktree_included:
-        raw = out / ".untracked.raw"
-        listed = git(["ls-files", "--others", "--exclude-standard"], repo)
+        listed = git(["ls-files", "-z", "--others", "--exclude-standard"], repo)
         if listed.returncode != 0:
             die("cannot list untracked files")
-        raw.write_text(listed.stdout, encoding="utf-8")
-        untracked = raw.read_text(encoding="utf-8", errors="replace").splitlines()
+        untracked = [path for path in listed.stdout.split("\0") if path]
         if os.environ.get("REVIEW_INCLUDE_PACK") != "1":
             ignored = re.compile(
                 r"^(\.opencode/|node_modules/|target/|bin/|obj/|\.terraform/|__pycache__/)"
             )
-            untracked = [line for line in untracked if not ignored.match(line)]
+            untracked = [path for path in untracked if not ignored.match(path)]
         (out / "untracked.txt").write_text(
-            "".join(f"{line}\n" for line in untracked), encoding="utf-8"
+            "".join(f"{path}\n" for path in untracked), encoding="utf-8"
         )
-        try:
-            raw.unlink()
-        except FileNotFoundError:
-            pass
         if untracked:
             with open(out / "untracked.patch", "a", encoding="utf-8") as handle:
-                for file in untracked:
-                    if not os.path.isfile(os.path.join(repo, file)):
+                for path in untracked:
+                    if not os.path.isfile(os.path.join(repo, path)):
                         continue
                     git(
-                        ["diff", "--no-index", "--unified=40", "--", "/dev/null", file],
+                        ["diff", "--no-index", "--unified=40", "--", "/dev/null", path],
                         repo,
                         stdout=handle,
                         stderr=subprocess.DEVNULL,
@@ -248,7 +242,7 @@ def iter_repo_files():
         dirs[:] = [name for name in dirs if name != ".git"]
         for name in files:
             path = os.path.join(root, name)
-            if os.path.islink(path):
+            if os.path.islink(path) or not os.path.isfile(path):
                 continue
             yield path
 
