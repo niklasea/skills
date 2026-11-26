@@ -3,7 +3,7 @@
 # Deterministic review gate. Runs available linters and validators, records
 # pass/fail/skip per tool, and never applies infrastructure changes.
 #
-# Usage: review-gate.sh [git-diff-range]
+# Usage: review-gate.sh [git-revision-or-range]
 # Env:
 #   REVIEW_OUT_DIR   output directory (defaults to /tmp/opencode/review-<sha>)
 #   REVIEW_GATE_FULL set to 1 to also run dotnet build/test and cargo checks
@@ -22,13 +22,45 @@ mkdir -p "$out"
 log="$out/gate.log"
 : >"$log"
 
+validate_range() {
+  local spec="$1" left right
+  [ -n "$spec" ] || return 1
+  case "$spec" in
+    *..*)
+      left="${spec%%..*}"
+      right="${spec#*..}"
+      if [ "${right#.}" != "$right" ]; then
+        right="${right#.}"
+      fi
+      [ -n "$left" ] || left="HEAD"
+      [ -n "$right" ] || right="HEAD"
+      git rev-parse --verify --quiet "${left}^{commit}" >/dev/null 2>&1 || return 1
+      git rev-parse --verify --quiet "${right}^{commit}" >/dev/null 2>&1 || return 1
+      ;;
+    *)
+      git rev-parse --verify --quiet "${spec}^{commit}" >/dev/null 2>&1 || return 1
+      ;;
+  esac
+  return 0
+}
+
 range="${1:-}"
 if [ -z "$range" ]; then
   if git rev-parse --verify -q origin/main >/dev/null 2>&1; then
     range="$(git merge-base origin/main HEAD)"
+    if [ -z "$range" ]; then
+      printf 'error: cannot find a merge base between origin/main and HEAD\n' >&2
+      exit 2
+    fi
   else
     range="HEAD"
   fi
+fi
+
+if ! validate_range "$range"; then
+  printf 'error: not a valid revision or range: %s\n' "$range" >&2
+  printf '%-28s %-6s %s\n' "git-diff-check" "fatal" "invalid range: $range" | tee -a "$log"
+  exit 2
 fi
 
 pass=0
@@ -83,11 +115,18 @@ record header "gate" "repository: $repo_root"
 record header "gate" "output: $out"
 
 # Whitespace and conflict markers across the review range.
-if git diff --check "$range" >>"$log" 2>&1; then
-  record pass "git-diff-check" "no whitespace errors"
-else
-  record fail "git-diff-check" "whitespace errors or conflict markers"
-fi
+check_out="$(git diff --check "$range" 2>&1)"
+check_rc=$?
+printf '%s\n' "$check_out" >>"$log"
+case "$check_rc" in
+  0) record pass "git-diff-check" "no whitespace errors" ;;
+  2) record fail "git-diff-check" "whitespace errors or conflict markers" ;;
+  *)
+    printf 'error: cannot diff %s (exit %d)\n' "$range" "$check_rc" >&2
+    record fail "git-diff-check" "cannot diff '$range' (exit $check_rc)"
+    exit 2
+    ;;
+esac
 
 # Terraform.
 if [ -d terraform ]; then
