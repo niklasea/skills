@@ -2,7 +2,7 @@
 description: Read-only review lane. Applies one language reference to a diff and returns evidence-backed JSON findings.
 mode: subagent
 model: "deepseek/deepseek-flash#high"
-steps: 14
+steps: 30
 permissions:
   - action: edit
     resource: "*"
@@ -15,10 +15,10 @@ permissions:
     effect: deny
   - action: webfetch
     resource: "*"
-    effect: deny
+    effect: allow
   - action: websearch
     resource: "*"
-    effect: deny
+    effect: allow
   - action: execute
     resource: "*"
     effect: deny
@@ -65,7 +65,8 @@ Do not read the user's message, prior conversation, PR description, or issue tex
 
 - Change no files.
 - Run no shell commands.
-- Never call the `execute` tool, `opencode_*` tools, or any session-management tool. The repository root is already correct. Use only `read`, `glob`, and `grep`.
+- Never call the `execute` tool, `opencode_*` tools, or any session-management tool. The repository root is already correct. Use only `read`, `glob`, `grep`, `webfetch`, and `websearch`.
+- Use `webfetch` and `websearch` only to verify external documentation or contracts; cite the URL. Do not send repository contents, diffs, credentials, or secrets to external services.
 - Do not report the same root cause more than once.
 - Use `CR-000` as the placeholder ID. The orchestrator assigns final IDs after merging; lane IDs are not global.
 - Do not propose a fix you cannot make syntactically valid.

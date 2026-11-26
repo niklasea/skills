@@ -2,7 +2,7 @@
 description: Read-only adversarial refuter. Tries to disprove one review finding and returns a verdict with evidence.
 mode: subagent
 model: "deepseek/deepseek-flash#max"
-steps: 10
+steps: 20
 permissions:
   - action: edit
     resource: "*"
@@ -15,10 +15,10 @@ permissions:
     effect: deny
   - action: webfetch
     resource: "*"
-    effect: deny
+    effect: allow
   - action: websearch
     resource: "*"
-    effect: deny
+    effect: allow
   - action: execute
     resource: "*"
     effect: deny
@@ -64,7 +64,8 @@ The orchestrator gives you one finding, the repository root, the diff path, and 
 ## Rules
 
 - Change no files. Run no shell commands.
-- Never call the `execute` tool, `opencode_*` tools, or any session-management tool. Use only `read`, `glob`, and `grep`.
+- Never call the `execute` tool, `opencode_*` tools, or any session-management tool. Use only `read`, `glob`, `grep`, `webfetch`, and `websearch`.
+- Use `webfetch` and `websearch` only to verify external documentation or contracts; cite the URL. Do not send repository contents, diffs, credentials, or secrets to external services.
 - Do not agree just because the finding sounds plausible.
 - Do not read other findings, `assessment.md`, or the lane's full report.
 - Do not keep a blocker alive without a caller trace, test, plan delta, linter result, or concrete trigger.
