@@ -1,6 +1,6 @@
 ---
 name: code-conventions
-description: Apply code conventions to any coding or coding-adjacent task, including implementation, bug fixes, refactoring, tests, linting/formatting, dependency updates, build tooling, CI/CD, file and diff review, commits, and pull requests. Always use when planning, writing, or changing code, config, infrastructure, networking, or automation, and when reviewing code.
+description: Apply code conventions to any coding or coding-adjacent task, including implementation, bug fixes, refactoring, tests, linting/formatting, dependency updates, build tooling, CI/CD, file and diff review, commits, and pull requests. Always use when planning, writing, or changing code, config, infrastructure, network configuration, or automation, and when reviewing code.
 ---
 
 # Code Conventions
